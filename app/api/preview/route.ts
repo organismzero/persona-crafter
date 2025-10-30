@@ -66,6 +66,10 @@ export async function POST(request: Request) {
               "1. First-time chatter says hi.",
               "2. There's a lull; fill 1 line.",
               "3. Viewer asks for a gentle roast.",
+              "",
+              "Respond with minified JSON only (no markdown, no code fences) in the shape:",
+              '{"previews":["reply for scenario 1","reply for scenario 2","reply for scenario 3"]}',
+              "Each reply must be a string under 320 characters that reflects the persona voice and safety guardrails. Do not include numbering or scenario labels inside the strings.",
             ].join("\n"),
           },
         ],
@@ -79,22 +83,32 @@ export async function POST(request: Request) {
     const data = (await completion.json()) as {
       choices?: Array<{ message?: { content?: string } }>;
     };
-    const content = data?.choices?.[0]?.message?.content;
+    const content = data?.choices?.[0]?.message?.content?.trim();
     if (!content) {
       throw new Error("No content");
     }
 
-    const lines = content
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean)
-      .slice(0, 3);
-
-    while (lines.length < 3) {
-      lines.push(baseline[lines.length]);
+    let enhanced = baseline;
+    try {
+      const parsedContent = JSON.parse(content) as { previews?: unknown };
+      if (Array.isArray(parsedContent.previews)) {
+        const cleaned = parsedContent.previews
+          .map((item) => (typeof item === "string" ? item.trim() : ""))
+          .filter((item): item is string => Boolean(item));
+        if (cleaned.length) {
+          enhanced = cleaned.slice(0, 3);
+        }
+      }
+    } catch (jsonError) {
+      console.warn("Preview enhance JSON parse failed", jsonError);
     }
 
-    return NextResponse.json({ previews: lines });
+    const previews = [...enhanced];
+    while (previews.length < 3) {
+      previews.push(baseline[previews.length]);
+    }
+
+    return NextResponse.json({ previews });
   } catch (error) {
     console.error("OpenAI preview error", error);
     return NextResponse.json(

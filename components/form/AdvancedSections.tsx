@@ -1,16 +1,49 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
+import { ReactNode } from "react";
+import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
 import type { PersonaConfig } from "@/schema/persona";
 
 type AdvancedSectionsProps = {
   form: UseFormReturn<PersonaConfig>;
 };
+
+type SelectWithClearProps = {
+  field: ControllerRenderProps<PersonaConfig, any>;
+  placeholder: string;
+  children: ReactNode;
+  clearLabel?: string;
+};
+
+const SelectWithClear = ({ field, placeholder, children, clearLabel = "Clear" }: SelectWithClearProps) => (
+  <div className="flex items-center gap-2">
+    <Select onValueChange={(value) => field.onChange(value || undefined)} value={field.value ?? ""}>
+      <FormControl>
+        <SelectTrigger>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+      </FormControl>
+      {children}
+    </Select>
+    {field.value ? (
+      <Button
+        type="button"
+        variant="ghost"
+        size="sm"
+        onClick={() => field.onChange(undefined)}
+        className="text-xs text-muted-foreground hover:text-foreground"
+      >
+        {clearLabel}
+      </Button>
+    ) : null}
+  </div>
+);
 
 const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
   <div className="rounded-xl border border-dashed border-border bg-muted/30 p-4">
@@ -28,19 +61,14 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Fourth wall</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Mostly in-character" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="Mostly in-character">
                   <SelectContent>
                     <SelectItem value="AlwaysIC">Always in-character</SelectItem>
                     <SelectItem value="MostlyIC">Mostly in-character</SelectItem>
                     <SelectItem value="ICButClarifySensitive">IC but clarify sensitive topics</SelectItem>
                     <SelectItem value="FreelyAcknowledgeAI">Freely acknowledge AI</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormDescription>If unsure, choose “IC but clarify sensitive.”</FormDescription>
                 <FormMessage />
               </FormItem>
@@ -52,18 +80,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Streamer alignment</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Back the streamer" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="Back the streamer">
                   <SelectContent>
                     <SelectItem value="AlwaysBackStreamer">Always back streamer</SelectItem>
                     <SelectItem value="UsuallyBackButGentlyDisagree">Back streamer, gently disagree</SelectItem>
                     <SelectItem value="IndependentPlayful">Independent but playful</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -74,18 +97,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>When unsure</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Default to honesty" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="Default to honesty">
                   <SelectContent>
                     <SelectItem value="AdmitUncertainty">Admit uncertainty</SelectItem>
                     <SelectItem value="PlayfulDeflection">Playful deflection</SelectItem>
                     <SelectItem value="AskClarifying">Ask clarifying questions</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormDescription>If unsure, choose “Admit uncertainty”—kind &gt; clever.</FormDescription>
                 <FormMessage />
               </FormItem>
@@ -184,18 +202,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Locale</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="US" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="US">
                   <SelectContent>
                     <SelectItem value="US">US</SelectItem>
                     <SelectItem value="UK">UK</SelectItem>
                     <SelectItem value="AU">AU</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -206,18 +219,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Casing flair</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="normal" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="normal">
                   <SelectContent>
                     <SelectItem value="normal">Normal</SelectItem>
                     <SelectItem value="lowercase">lowercase breezy</SelectItem>
                     <SelectItem value="occasionalAllCaps">occasional ALL CAPS</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -228,17 +236,12 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Asterisk actions</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Allow" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="Allow">
                   <SelectContent>
                     <SelectItem value="allow">Allow</SelectItem>
                     <SelectItem value="avoid">Avoid</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -263,19 +266,14 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Emotes</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Twitch" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="Twitch">
                   <SelectContent>
                     <SelectItem value="Twitch">Twitch</SelectItem>
                     <SelectItem value="Unicode">Unicode</SelectItem>
                     <SelectItem value="Both">Both</SelectItem>
                     <SelectItem value="Minimal">Minimal</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -286,18 +284,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Onomatopoeia</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="allow" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="allow">
                   <SelectContent>
                     <SelectItem value="allow">Allow</SelectItem>
                     <SelectItem value="limit">Limit</SelectItem>
                     <SelectItem value="avoid">Avoid</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -308,18 +301,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Kaomoji</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="none" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="none">
                   <SelectContent>
                     <SelectItem value="none">None</SelectItem>
                     <SelectItem value="light">Light</SelectItem>
                     <SelectItem value="heavy">Heavy</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -360,18 +348,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Mood range</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="moderate" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="moderate">
                   <SelectContent>
                     <SelectItem value="narrow">Narrow</SelectItem>
                     <SelectItem value="moderate">Moderate</SelectItem>
                     <SelectItem value="wide">Wide</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -396,12 +379,7 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>When praised</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="bashful" />
-                      </SelectTrigger>
-                    </FormControl>
+                  <SelectWithClear field={field} placeholder="bashful">
                     <SelectContent>
                       <SelectItem value="bashful">Bashful</SelectItem>
                       <SelectItem value="confident">Confident</SelectItem>
@@ -409,7 +387,7 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
                       <SelectItem value="playful_deflect">Playful deflect</SelectItem>
                       <SelectItem value="sincere">Sincere</SelectItem>
                     </SelectContent>
-                  </Select>
+                  </SelectWithClear>
                   <FormMessage />
                 </FormItem>
               )}
@@ -417,27 +395,22 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             <FormField
               control={form.control}
               name="mood.when_criticized"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>When criticized</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="bashful" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="bashful">Bashful</SelectItem>
-                      <SelectItem value="confident">Confident</SelectItem>
-                      <SelectItem value="self_deprecating">Self-deprecating</SelectItem>
-                      <SelectItem value="playful_deflect">Playful deflect</SelectItem>
-                      <SelectItem value="sincere">Sincere</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>When criticized</FormLabel>
+                <SelectWithClear field={field} placeholder="bashful">
+                  <SelectContent>
+                    <SelectItem value="bashful">Bashful</SelectItem>
+                    <SelectItem value="confident">Confident</SelectItem>
+                    <SelectItem value="self_deprecating">Self-deprecating</SelectItem>
+                    <SelectItem value="playful_deflect">Playful deflect</SelectItem>
+                    <SelectItem value="sincere">Sincere</SelectItem>
+                  </SelectContent>
+                </SelectWithClear>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           </div>
         </AccordionContent>
       </AccordionItem>
@@ -508,18 +481,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Refusal style</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="warm_apologetic" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="warm_apologetic">
                   <SelectContent>
                     <SelectItem value="warm_apologetic">Warm & apologetic</SelectItem>
                     <SelectItem value="playful_deflect">Playful deflect</SelectItem>
                     <SelectItem value="firm_brief">Firm & brief</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -593,18 +561,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Exclamations</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="moderate" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="moderate">
                   <SelectContent>
                     <SelectItem value="rare">Rare</SelectItem>
                     <SelectItem value="moderate">Moderate</SelectItem>
                     <SelectItem value="lots">Lots</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -615,18 +578,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Paragraph style</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="short bursts" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="short bursts">
                   <SelectContent>
                     <SelectItem value="one_liners">One-liners</SelectItem>
                     <SelectItem value="short_bursts">Short bursts</SelectItem>
                     <SelectItem value="occasional_chunky">Occasional chunky</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -643,18 +601,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Improv mode</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="light" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="light">
                   <SelectContent>
                     <SelectItem value="strict">Strict</SelectItem>
                     <SelectItem value="light">Light</SelectItem>
                     <SelectItem value="playful">Playful</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -666,18 +619,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Label improv?</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="subtle" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="subtle">
                   <SelectContent>
                     <SelectItem value="never">Never</SelectItem>
                     <SelectItem value="subtle">Subtle</SelectItem>
                     <SelectItem value="explicit">Explicit</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -689,18 +637,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>When corrected</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="drop & thank" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="drop & thank">
                   <SelectContent>
                     <SelectItem value="drop_thank">Drop & thank</SelectItem>
                     <SelectItem value="concede_playfully">Concede playfully</SelectItem>
                     <SelectItem value="hold_until_streamer_says_stop">Hold until streamer says stop</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -717,18 +660,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Level</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="dynamic" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="dynamic">
                   <SelectContent>
                     <SelectItem value="rigid">Rigid</SelectItem>
                     <SelectItem value="mild">Mild</SelectItem>
                     <SelectItem value="dynamic">Dynamic</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -739,18 +677,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Tone authority</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Equal footing" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="Equal footing">
                   <SelectContent>
                     <SelectItem value="StreamerGTChat">Streamer &gt; Chat</SelectItem>
                     <SelectItem value="Equal">Equal</SelectItem>
                     <SelectItem value="AlwaysStreamer">Always streamer</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}
@@ -761,18 +694,13 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Allowed shifts</FormLabel>
-                <Select onValueChange={field.onChange} value={field.value ?? ""}>
-                  <FormControl>
-                    <SelectTrigger>
-                      <SelectValue placeholder="energy only" />
-                    </SelectTrigger>
-                  </FormControl>
+                <SelectWithClear field={field} placeholder="energy only">
                   <SelectContent>
                     <SelectItem value="energy_only">Energy only</SelectItem>
                     <SelectItem value="energy_humor">Energy + humor</SelectItem>
                     <SelectItem value="full_mood_limits">Full mood limits</SelectItem>
                   </SelectContent>
-                </Select>
+                </SelectWithClear>
                 <FormMessage />
               </FormItem>
             )}

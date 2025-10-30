@@ -50,18 +50,25 @@ const LivePreview = ({
         <CardTitle className="flex items-center justify-between gap-2">
           Live Preview
           {enhanceAvailable ? (
-            <span className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Switch
-                aria-label="Toggle enhanced preview"
-                checked={enhanceEnabled}
-                onCheckedChange={onToggleEnhance}
-                disabled={!enhanceAvailable || isEnhancing}
-              />
-              <span className="flex items-center gap-1">
-                <Wand2 className="h-4 w-4" />
-                {isEnhancing ? "Enhancing…" : "Enhance"}
+            <div className="flex flex-col items-end gap-1 text-[11px] text-muted-foreground">
+              <div className="flex items-center gap-2">
+                <Switch
+                  aria-label="Toggle enhanced preview"
+                  checked={enhanceEnabled}
+                  onCheckedChange={onToggleEnhance}
+                  disabled={!enhanceAvailable || isEnhancing}
+                />
+                <span className="flex items-center gap-1 font-medium text-foreground">
+                  <Wand2 className="h-4 w-4" />
+                  {isEnhancing ? "Refreshing…" : enhanceEnabled ? "Enhanced" : "Enhance"}
+                </span>
+              </div>
+              <span>
+                {enhanceEnabled
+                  ? "Auto-refreshes as you tweak the persona."
+                  : "Toggle on to polish drafts with your token."}
               </span>
-            </span>
+            </div>
           ) : (
             <Badge variant="secondary">Deterministic</Badge>
           )}

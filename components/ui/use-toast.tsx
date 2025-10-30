@@ -188,6 +188,3 @@ const Toaster = () => {
 };
 
 export { useToast, toast, Toaster, type ToastActionElement };
-import * as React from "react";
-import type { ToastProps } from "@radix-ui/react-toast";
-import * as React from "react";

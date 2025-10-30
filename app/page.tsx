@@ -161,14 +161,6 @@ const Page = () => {
     }
   }, [form, sessionToken, toast]);
 
-  useEffect(() => {
-    if (enhanceEnabled) {
-      void enhancePreviews();
-    } else {
-      setEnhancedDrafts(undefined);
-    }
-  }, [enhanceEnabled, enhancePreviews]);
-
   const onSubmit = useCallback(
     async (values: PersonaConfig) => {
       const parsed = PersonaConfig.parse(values);
@@ -225,6 +217,16 @@ const Page = () => {
     const parsed = PersonaConfig.safeParse(watchedConfig);
     return parsed.success ? parsed.data : defaultPersonaConfig;
   }, [watchedConfig]);
+
+  const previewSignature = useMemo(() => JSON.stringify(personaForPreview), [personaForPreview]);
+
+  useEffect(() => {
+    if (!enhanceEnabled) {
+      setEnhancedDrafts(undefined);
+      return;
+    }
+    void enhancePreviews();
+  }, [enhanceEnabled, enhancePreviews, previewSignature]);
 
   const disableGenerate = !form.formState.isValid;
   const hasClientToken = Boolean(sessionToken);
