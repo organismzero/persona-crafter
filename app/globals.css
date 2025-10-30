@@ -4,29 +4,29 @@
 @theme {
   --font-sans: var(--font-inter, "Inter", system-ui, -apple-system, "Segoe UI", sans-serif);
 
-  --color-background: 0 0% 100%;
-  --color-foreground: 222.2 47.4% 11.2%;
-  --color-muted: 210 40% 96.1%;
-  --color-muted-foreground: 215.4 16.3% 46.9%;
+  --color-background: 220 50% 97%;
+  --color-foreground: 222 47% 12%;
+  --color-muted: 220 45% 94%;
+  --color-muted-foreground: 220 23% 46%;
   --color-popover: 0 0% 100%;
-  --color-popover-foreground: 222.2 47.4% 11.2%;
+  --color-popover-foreground: 222 47% 12%;
   --color-card: 0 0% 100%;
-  --color-card-foreground: 222.2 47.4% 11.2%;
-  --color-border: 214.3 31.8% 91.4%;
-  --color-input: 214.3 31.8% 91.4%;
-  --color-primary: 221.2 83.2% 53.3%;
+  --color-card-foreground: 222 47% 12%;
+  --color-border: 220 24% 82%;
+  --color-input: 220 24% 82%;
+  --color-primary: 222 85% 55%;
   --color-primary-foreground: 210 40% 98%;
-  --color-secondary: 210 40% 96.1%;
-  --color-secondary-foreground: 222.2 47.4% 11.2%;
-  --color-accent: 210 40% 96.1%;
-  --color-accent-foreground: 222.2 47.4% 11.2%;
-  --color-destructive: 0 84.2% 60.2%;
+  --color-secondary: 215 60% 92%;
+  --color-secondary-foreground: 222 47% 20%;
+  --color-accent: 210 72% 92%;
+  --color-accent-foreground: 222 47% 15%;
+  --color-destructive: 0 80% 55%;
   --color-destructive-foreground: 210 40% 98%;
-  --color-ring: 221.2 83.2% 53.3%;
+  --color-ring: 222 85% 55%;
 
-  --radius-lg: 0.75rem;
-  --radius-md: calc(var(--radius-lg) - 0.125rem);
-  --radius-sm: calc(var(--radius-lg) - 0.25rem);
+  --radius-lg: 1rem;
+  --radius-md: calc(var(--radius-lg) - 0.25rem);
+  --radius-sm: calc(var(--radius-lg) - 0.4rem);
 }
 
 :root {
@@ -35,29 +35,32 @@
 
 .dark {
   color-scheme: dark;
-  --color-background: 222.2 47.4% 11.2%;
+  --color-background: 222 47% 12%;
   --color-foreground: 210 40% 98%;
-  --color-muted: 217.2 32.6% 17.5%;
-  --color-muted-foreground: 215 20.2% 65.1%;
-  --color-popover: 222.2 47.4% 11.2%;
+  --color-muted: 223 32% 18%;
+  --color-muted-foreground: 215 20% 72%;
+  --color-popover: 223 40% 16%;
   --color-popover-foreground: 210 40% 98%;
-  --color-card: 222.2 47.4% 11.2%;
+  --color-card: 223 45% 18%;
   --color-card-foreground: 210 40% 98%;
-  --color-border: 217.2 32.6% 17.5%;
-  --color-input: 217.2 32.6% 17.5%;
-  --color-primary: 217.2 91.2% 59.8%;
-  --color-primary-foreground: 222.2 47.4% 11.2%;
-  --color-secondary: 217.2 32.6% 17.5%;
+  --color-border: 222 36% 24%;
+  --color-input: 222 36% 24%;
+  --color-primary: 217 89% 66%;
+  --color-primary-foreground: 222 47% 12%;
+  --color-secondary: 220 40% 26%;
   --color-secondary-foreground: 210 40% 98%;
-  --color-accent: 217.2 32.6% 17.5%;
+  --color-accent: 218 55% 30%;
   --color-accent-foreground: 210 40% 98%;
-  --color-destructive: 0 62.8% 30.6%;
+  --color-destructive: 0 68% 40%;
   --color-destructive-foreground: 210 40% 98%;
-  --color-ring: 217.2 91.2% 59.8%;
+  --color-ring: 217 89% 66%;
 }
 
 body {
   @apply bg-background text-foreground font-sans antialiased;
+  background-image: radial-gradient(circle at top left, hsl(215 80% 92%) 0%, transparent 45%),
+    radial-gradient(circle at bottom right, hsl(210 90% 96%) 0%, transparent 40%);
+  min-height: 100vh;
 }
 
 * {

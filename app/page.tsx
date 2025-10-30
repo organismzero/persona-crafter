@@ -219,20 +219,28 @@ const Page = () => {
   const disableGenerate = !form.formState.isValid;
 
   return (
-    <main className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 lg:flex-row lg:gap-8">
-      <div className="w-full lg:w-7/12">
-        <header className="mb-6 space-y-4">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold">Persona Crafter</h1>
-              <p className="text-sm text-muted-foreground">
-                Friendly wizard to draft your chatbot’s personality. Quick Start first—Advanced when you’re ready.
+    <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-12 lg:flex-row lg:gap-10">
+      <div className="pointer-events-none absolute inset-0 -z-10 blur-3xl">
+        <div className="absolute left-10 top-0 h-64 w-64 rounded-full bg-primary/15" />
+        <div className="absolute right-10 bottom-10 h-72 w-72 rounded-full bg-secondary/30" />
+      </div>
+      <div className="w-full rounded-3xl border border-white/60 bg-card/90 p-6 shadow-2xl shadow-primary/10 backdrop-blur-xl lg:w-7/12 lg:p-8">
+        <header className="mb-8 space-y-5">
+          <div className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-gradient-to-br from-white via-white/95 to-secondary/40 p-6 shadow-lg shadow-primary/5 sm:flex-row sm:items-start sm:justify-between">
+            <div className="max-w-xl space-y-2">
+              <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
+                Cozy persona builder
+              </div>
+              <h1 className="text-3xl font-bold text-foreground">Persona Crafter</h1>
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                Shape your chatbot’s vibe in minutes. Start with the guided essentials, sprinkle in advanced lore and voice
+                tweaks, and watch the live preview respond instantly.
               </p>
-              <div className="mt-2 flex items-center gap-3 text-xs">
-                <Link href="/about" className="text-primary underline-offset-4 hover:underline">
+              <div className="flex flex-wrap items-center gap-3 text-xs font-medium text-muted-foreground">
+                <Link href="/about" className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
                   About
                 </Link>
-                <Link href="/export" className="text-primary underline-offset-4 hover:underline">
+                <Link href="/export" className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
                   Latest export
                 </Link>
               </div>
@@ -245,6 +253,10 @@ const Page = () => {
             />
           </div>
           <Separator />
+          <p className="text-sm text-muted-foreground">
+            Everything saves locally to your browser—no external storage, no drama. You can export or re-import your persona
+            config anytime.
+          </p>
         </header>
         <Form {...form}>
           <form className="space-y-10" onSubmit={form.handleSubmit(onSubmit)}>
@@ -279,7 +291,14 @@ const Page = () => {
         </Form>
       </div>
       <div className="w-full lg:w-5/12">
-        <div className="sticky top-20 flex flex-col gap-4">
+        <div className="sticky top-20 flex flex-col gap-6">
+          <div className="rounded-3xl border border-white/60 bg-card/90 p-6 shadow-2xl shadow-primary/10 backdrop-blur-xl">
+            <h2 className="text-lg font-semibold text-foreground">Live Persona Preview</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Try different combinations and see how your bot would greet newcomers, fill dead air, or deliver a roast before
+              committing to an export.
+            </p>
+          </div>
           <LivePreview
             config={personaForPreview}
             enhanceAvailable={hasOpenAIToggle}

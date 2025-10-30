@@ -41,7 +41,7 @@ const ImportExportBar = ({ onImport, onExport, onReset, lastSavedAt }: ImportExp
   };
 
   return (
-    <div className="flex flex-col gap-2 text-right text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-end">
+    <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-white/60 px-3 py-2 text-right text-xs text-muted-foreground shadow-inner shadow-primary/5 sm:flex-row sm:items-center sm:justify-end">
       <input
         ref={fileInputRef}
         type="file"
@@ -55,18 +55,18 @@ const ImportExportBar = ({ onImport, onExport, onReset, lastSavedAt }: ImportExp
         <Button
           type="button"
           size="sm"
-          variant="ghost"
+          variant="secondary"
           onClick={() => fileInputRef.current?.click()}
-          className="gap-1"
+          className="gap-1 rounded-full px-4"
         >
           <Upload className="h-4 w-4" />
           Import
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onExport} className="gap-1">
+        <Button type="button" size="sm" variant="secondary" onClick={onExport} className="gap-1 rounded-full px-4">
           <Download className="h-4 w-4" />
           Export
         </Button>
-        <Button type="button" size="sm" variant="ghost" onClick={onReset} className="gap-1">
+        <Button type="button" size="sm" variant="secondary" onClick={onReset} className="gap-1 rounded-full px-4">
           <RefreshCw className="h-4 w-4" />
           Reset
         </Button>
