@@ -1,0 +1,9 @@
+{
+  "name": "Persona Crafter",
+  "short_name": "PersonaCrafter",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2563eb",
+  "description": "Build a chatbot persona with live previews and exports."
+}
