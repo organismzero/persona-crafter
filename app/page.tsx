@@ -11,6 +11,7 @@ import AdvancedSections from "@/components/form/AdvancedSections";
 import LivePreview from "@/components/LivePreview";
 import ConsistencyHints from "@/components/ConsistencyHints";
 import ImportExportBar from "@/components/ImportExportBar";
+import SettingsPanel from "@/components/SettingsPanel";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Separator } from "@/components/ui/separator";
@@ -20,6 +21,8 @@ import { buildSystemPrompt } from "@/lib/promptBuilder";
 import { buildCheatsheet } from "@/lib/cheatsheetBuilder";
 import { PersonaConfig, defaultPersonaConfig } from "@/schema/persona";
 import { useToast } from "@/components/ui/use-toast";
+import { useSessionStorage } from "@/hooks/useSessionStorage";
+import { SESSION_TOKEN_KEY } from "@/lib/token";
 
 const hasOpenAIToggle = process.env.NEXT_PUBLIC_HAS_OPENAI === "true";
 
@@ -40,6 +43,10 @@ const Page = () => {
   const [enhancedDrafts, setEnhancedDrafts] = useState<string[]>();
   const [isEnhancing, setIsEnhancing] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [sessionToken, setSessionToken] = useSessionStorage<string>({
+    key: SESSION_TOKEN_KEY,
+    defaultValue: "",
+  });
 
   const form = useForm<PersonaConfig>({
     resolver: zodResolver(PersonaConfig),
@@ -131,7 +138,10 @@ const Page = () => {
       const response = await fetch("/api/preview", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ config: parsed.data }),
+        body: JSON.stringify({
+          config: parsed.data,
+          clientToken: sessionToken || undefined,
+        }),
       });
       if (!response.ok) {
         throw new Error("Unable to enhance");
@@ -149,7 +159,7 @@ const Page = () => {
     } finally {
       setIsEnhancing(false);
     }
-  }, [form, toast]);
+  }, [form, sessionToken, toast]);
 
   useEffect(() => {
     if (enhanceEnabled) {
@@ -217,6 +227,14 @@ const Page = () => {
   }, [watchedConfig]);
 
   const disableGenerate = !form.formState.isValid;
+  const hasClientToken = Boolean(sessionToken);
+  const canEnhance = hasOpenAIToggle || hasClientToken;
+
+  useEffect(() => {
+    if (!canEnhance && enhanceEnabled) {
+      setEnhanceEnabled(false);
+    }
+  }, [canEnhance, enhanceEnabled]);
 
   return (
     <main className="relative mx-auto flex w-full max-w-7xl flex-col gap-8 px-4 py-12 lg:flex-row lg:gap-10">
@@ -245,12 +263,16 @@ const Page = () => {
                 </Link>
               </div>
             </div>
-            <ImportExportBar
-              onImport={handleImport}
-              onExport={handleExport}
-              onReset={handleReset}
-              lastSavedAt={lastSavedAt}
-            />
+            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+              <SettingsPanel token={sessionToken} onTokenChange={setSessionToken} />
+              <ImportExportBar
+                onImport={handleImport}
+                onExport={handleExport}
+                onReset={handleReset}
+                lastSavedAt={lastSavedAt}
+                className="w-full sm:w-auto"
+              />
+            </div>
           </div>
           <Separator />
           <p className="text-sm text-muted-foreground">
@@ -301,14 +323,21 @@ const Page = () => {
           </div>
           <LivePreview
             config={personaForPreview}
-            enhanceAvailable={hasOpenAIToggle}
+            enhanceAvailable={canEnhance}
             enhanceEnabled={enhanceEnabled}
             onToggleEnhance={(checked) => {
-              if (!hasOpenAIToggle) return;
+              if (!canEnhance) {
+                toast({
+                  title: "Add an OpenAI token",
+                  description: "Use the Settings button to provide a token for Enhance Preview.",
+                });
+                return;
+              }
               setEnhanceEnabled(checked);
             }}
             enhancedDrafts={enhancedDrafts}
             isEnhancing={isEnhancing}
+            hasClientToken={hasClientToken}
           />
         </div>
       </div>

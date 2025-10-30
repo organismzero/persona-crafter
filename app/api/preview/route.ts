@@ -5,13 +5,12 @@ import type { PersonaConfig } from "@/schema/persona";
 
 type PreviewPayload = {
   config: PersonaConfig;
+  clientToken?: string;
 };
 
 export const runtime = "nodejs";
 
 export async function POST(request: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
-
   let payload: PreviewPayload;
   try {
     payload = (await request.json()) as PreviewPayload;
@@ -26,10 +25,14 @@ export async function POST(request: Request) {
 
   const baseline = buildPreviewReplies(parsed.data);
 
-  if (!apiKey) {
+  const envToken = process.env.OPENAI_API_KEY?.trim();
+  const clientToken = payload.clientToken?.trim();
+  const activeToken = envToken || (clientToken ? clientToken : undefined);
+
+  if (!activeToken) {
     return NextResponse.json(
       {
-        message: "OPENAI_API_KEY not configured. Falling back to deterministic previews.",
+        message: "No OpenAI API key available. Add a client token in Settings to unlock Enhance Preview.",
         previews: baseline,
       },
       { status: 400 },
@@ -41,7 +44,7 @@ export async function POST(request: Request) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${apiKey}`,
+        Authorization: `Bearer ${activeToken}`,
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
@@ -91,9 +94,7 @@ export async function POST(request: Request) {
       lines.push(baseline[lines.length]);
     }
 
-    return NextResponse.json({
-      previews: lines,
-    });
+    return NextResponse.json({ previews: lines });
   } catch (error) {
     console.error("OpenAI preview error", error);
     return NextResponse.json(

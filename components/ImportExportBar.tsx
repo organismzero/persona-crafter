@@ -3,15 +3,17 @@ import { Download, RefreshCw, Upload } from "lucide-react";
 import type { PersonaConfig } from "@/schema/persona";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
 
 type ImportExportBarProps = {
   onImport: (config: PersonaConfig) => void;
   onExport: () => void;
   onReset: () => void;
   lastSavedAt?: string;
+  className?: string;
 };
 
-const ImportExportBar = ({ onImport, onExport, onReset, lastSavedAt }: ImportExportBarProps) => {
+const ImportExportBar = ({ onImport, onExport, onReset, lastSavedAt, className }: ImportExportBarProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
@@ -41,7 +43,12 @@ const ImportExportBar = ({ onImport, onExport, onReset, lastSavedAt }: ImportExp
   };
 
   return (
-    <div className="flex flex-col gap-2 rounded-xl border border-border/70 bg-white/60 px-3 py-2 text-right text-xs text-muted-foreground shadow-inner shadow-primary/5 sm:flex-row sm:items-center sm:justify-end">
+    <div
+      className={cn(
+        "flex flex-col gap-2 rounded-xl border border-border/70 bg-white/60 px-3 py-2 text-right text-xs text-muted-foreground shadow-inner shadow-primary/5 sm:flex-row sm:items-center sm:justify-end",
+        className,
+      )}
+    >
       <input
         ref={fileInputRef}
         type="file"

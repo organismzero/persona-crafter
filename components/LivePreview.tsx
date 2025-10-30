@@ -15,6 +15,7 @@ type LivePreviewProps = {
   onToggleEnhance: (enabled: boolean) => void;
   enhancedDrafts?: string[];
   isEnhancing?: boolean;
+  hasClientToken?: boolean;
 };
 
 const PREVIEW_IDS = [
@@ -30,6 +31,7 @@ const LivePreview = ({
   onToggleEnhance,
   enhancedDrafts,
   isEnhancing,
+  hasClientToken = false,
 }: LivePreviewProps) => {
   const [activeTab, setActiveTab] = useState<(typeof PREVIEW_IDS)[number]["id"]>("first-time");
 
@@ -43,7 +45,7 @@ const LivePreview = ({
   };
 
   return (
-    <Card className="sticky top-24 flex h-fit flex-col gap-4 border-dashed">
+    <Card className="sticky top-24 flex h-fit flex-col gap-4 border-dashed border-primary/20 bg-card/95 backdrop-blur-xl">
       <CardHeader>
         <CardTitle className="flex items-center justify-between gap-2">
           Live Preview
@@ -53,11 +55,11 @@ const LivePreview = ({
                 aria-label="Toggle enhanced preview"
                 checked={enhanceEnabled}
                 onCheckedChange={onToggleEnhance}
-                disabled={isEnhancing}
+                disabled={!enhanceAvailable || isEnhancing}
               />
               <span className="flex items-center gap-1">
                 <Wand2 className="h-4 w-4" />
-                Enhance
+                {isEnhancing ? "Enhancing…" : "Enhance"}
               </span>
             </span>
           ) : (
@@ -73,6 +75,7 @@ const LivePreview = ({
           <Badge variant="outline">Roasting: {config.roasting}</Badge>
           <Badge variant="outline">Energy: {config.voice.energy}/10</Badge>
           <Badge variant="outline">Formality: {config.voice.formality}/10</Badge>
+          {hasClientToken ? <Badge variant="secondary">Session token</Badge> : null}
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -108,6 +111,13 @@ const LivePreview = ({
           ) : (
             <p>The deterministic preview runs entirely in your browser. No API key required.</p>
           )}
+          {!enhanceAvailable ? (
+            <p className="text-amber-600">
+              Want polished copy? Add an OpenAI API token from the Settings panel to unlock Enhance Preview.
+            </p>
+          ) : hasClientToken ? (
+            <p>Your session token powers the enhance mode. It stays local to this tab and isn’t saved server-side.</p>
+          ) : null}
         </div>
       </CardContent>
     </Card>

@@ -25,6 +25,9 @@ Persona Crafter is a Next.js (App Router) application for shaping a streamer cha
 - **Import/Export controls**
   - JSON round-trip of the entire persona state (`persona_config_v1`)
   - Debounced persistence to local storage
+- **Session settings panel**
+  - Add/remove a client-side OpenAI API token (stored in `sessionStorage`)
+  - Unlocks Enhance Preview even when no server token is configured
 - **Static-export ready**
   - `next.config.mjs` leverages `output: "export"`
   - Tailwind CSS v4 via `@tailwindcss/postcss`
@@ -61,6 +64,10 @@ npm run dev
 
 Navigate to `http://localhost:3000`. Hot reloading is handled by Turbopack.
 
+### Optional: add a client token
+
+Open the **Settings** button in the questionnaire header (or browse to `/settings`) to provide a per-session OpenAI API key. The token lives in `sessionStorage` so it disappears when the tab closes.
+
 ### Type checking & linting
 
 ```bash
@@ -90,7 +97,7 @@ Artifacts land in the `/samples` directory.
 
 - `OPENAI_API_KEY` – optional. When provided, `/api/generate` and `/api/preview` will send the persona configuration to OpenAI for enhanced outputs. Without the key, the app falls back to deterministic builders.
 
-Expose the key locally via `.env.local`:
+Expose the key locally via `.env.local`. If you prefer to keep the server stateless, you can also add a token per-session in the in-app **Settings** panel; it’s saved only in the current browser tab.
 
 ```
 OPENAI_API_KEY=sk-...
