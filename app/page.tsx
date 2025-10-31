@@ -246,16 +246,18 @@ const Page = () => {
       </div>
       <div className="w-full rounded-3xl border border-white/60 bg-card/90 p-6 shadow-2xl shadow-primary/10 backdrop-blur-xl lg:w-7/12 lg:p-8">
         <header className="mb-8 space-y-5">
-          <div className="flex flex-col gap-4 rounded-2xl border border-border/80 bg-gradient-to-br from-white via-white/95 to-secondary/40 p-6 shadow-lg shadow-primary/5 sm:flex-row sm:items-start sm:justify-between">
-            <div className="max-w-xl space-y-2">
+          <div className="flex flex-col gap-6 rounded-2xl border border-border/80 bg-gradient-to-br from-white via-white/95 to-secondary/40 p-6 shadow-lg shadow-primary/5">
+            <div className="space-y-3">
               <div className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                 Cozy persona builder
               </div>
               <h1 className="text-3xl font-bold text-foreground">Persona Crafter</h1>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                Shape your chatbot’s vibe in minutes. Start with the guided essentials, sprinkle in advanced lore and voice
-                tweaks, and watch the live preview respond instantly.
-              </p>
+            </div>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              Shape your chatbot’s vibe in minutes. Start with the guided essentials, sprinkle in advanced lore and voice tweaks,
+              and watch the live preview respond instantly.
+            </p>
+            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-wrap items-center gap-3 text-xs font-medium text-muted-foreground">
                 <Link href="/about" className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline">
                   About
@@ -264,16 +266,16 @@ const Page = () => {
                   Latest export
                 </Link>
               </div>
-            </div>
-            <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
-              <SettingsPanel token={sessionToken} onTokenChange={setSessionToken} />
-              <ImportExportBar
-                onImport={handleImport}
-                onExport={handleExport}
-                onReset={handleReset}
-                lastSavedAt={lastSavedAt}
-                className="w-full sm:w-auto"
-              />
+              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-end">
+                <SettingsPanel token={sessionToken} onTokenChange={setSessionToken} />
+                <ImportExportBar
+                  onImport={handleImport}
+                  onExport={handleExport}
+                  onReset={handleReset}
+                  lastSavedAt={lastSavedAt}
+                  className="w-full sm:w-auto"
+                />
+              </div>
             </div>
           </div>
           <Separator />
