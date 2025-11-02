@@ -19,12 +19,11 @@ import { evaluateConsistency, type ConsistencyIssue, type ConsistencyResolution 
 import { clearPersonaConfig, loadPersonaConfig, saveArtifacts, savePersonaConfig } from "@/lib/storage";
 import { buildSystemPrompt } from "@/lib/promptBuilder";
 import { buildCheatsheet } from "@/lib/cheatsheetBuilder";
+import { buildPreviewReplies } from "@/lib/previewBuilder";
 import { PersonaConfig, defaultPersonaConfig } from "@/schema/persona";
 import { useToast } from "@/components/ui/use-toast";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { SESSION_TOKEN_KEY } from "@/lib/token";
-
-const hasOpenAIToggle = process.env.NEXT_PUBLIC_HAS_OPENAI === "true";
 
 const debounce = (fn: (...args: any[]) => void, delay: number) => {
   let timeout: ReturnType<typeof setTimeout>;
@@ -133,21 +132,83 @@ const Page = () => {
       return;
     }
 
+    const token = sessionToken?.trim();
+    if (!token) {
+      toast({
+        title: "Add an OpenAI token",
+        description: "Provide a session token in Settings to unlock Enhance Preview.",
+      });
+      setEnhanceEnabled(false);
+      return;
+    }
+
     setIsEnhancing(true);
     try {
-      const response = await fetch("/api/preview", {
+      const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify({
-          config: parsed.data,
-          clientToken: sessionToken || undefined,
+          model: "gpt-4o-mini",
+          temperature: 0.4,
+          max_tokens: 800,
+          messages: [
+            {
+              role: "system",
+              content:
+                "You craft short sample chat replies for a streamer co-host. Use the provided persona summary. Keep safety guardrails intact.",
+            },
+            {
+              role: "user",
+              content: [
+                "Persona config JSON:",
+                JSON.stringify(parsed.data, null, 2),
+                "",
+                "Create three distinct replies for:",
+                "1. First-time chatter says hi.",
+                "2. There's a lull; fill 1 line.",
+                "3. Viewer asks for a gentle roast.",
+                "",
+                "Respond with minified JSON only (no markdown, no code fences) in the shape:",
+                '{"previews":["reply for scenario 1","reply for scenario 2","reply for scenario 3"]}',
+                "Each reply must be a string under 320 characters that reflects the persona voice and safety guardrails. Do not include numbering or scenario labels inside the strings.",
+              ].join("\n"),
+            },
+          ],
         }),
       });
       if (!response.ok) {
         throw new Error("Unable to enhance");
       }
-      const data = (await response.json()) as { previews: string[] };
-      setEnhancedDrafts(data.previews);
+      const data = (await response.json()) as {
+        choices?: Array<{ message?: { content?: string } }>;
+      };
+      const baseline = buildPreviewReplies(parsed.data);
+      const content = data?.choices?.[0]?.message?.content?.trim();
+      if (!content) {
+        setEnhancedDrafts(baseline);
+        return;
+      }
+      let enhanced = baseline;
+      try {
+        const parsedContent = JSON.parse(content) as { previews?: unknown };
+        if (Array.isArray(parsedContent.previews)) {
+          const cleaned = parsedContent.previews
+            .map((item) => (typeof item === "string" ? item.trim() : ""))
+            .filter((item): item is string => Boolean(item));
+          if (cleaned.length) {
+            enhanced = [...cleaned.slice(0, 3)];
+            while (enhanced.length < 3) {
+              enhanced.push(baseline[enhanced.length]);
+            }
+          }
+        }
+      } catch (error) {
+        console.warn("Preview enhance JSON parse failed", error);
+      }
+      setEnhancedDrafts(enhanced);
     } catch (error) {
       console.warn(error);
       setEnhancedDrafts(undefined);
@@ -170,22 +231,48 @@ const Page = () => {
 
       try {
         let systemPrompt = buildSystemPrompt(parsed, { includeFewShots });
-
-        if (hasOpenAIToggle) {
+        const token = sessionToken?.trim();
+        if (token) {
           try {
-            const response = await fetch("/api/generate", {
+            const response = await fetch("https://api.openai.com/v1/chat/completions", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ config: parsed, includeFewShots }),
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`,
+              },
+              body: JSON.stringify({
+                model: "gpt-4o-mini",
+                temperature: 0.3,
+                max_tokens: 2500,
+                messages: [
+                  {
+                    role: "system",
+                    content:
+                      "You polish system prompts for streaming chatbots. Do not remove safety guardrails or personalization placeholders. Keep markdown structure intact and ensure length stays above 1,400 words.",
+                  },
+                  {
+                    role: "user",
+                    content: `Polish this prompt while keeping all rules, sections, and safety statements untouched:\n\n${systemPrompt}`,
+                  },
+                ],
+              }),
             });
-            if (response.ok) {
-              const data = (await response.json()) as { systemPrompt?: string };
-              if (data.systemPrompt) {
-                systemPrompt = data.systemPrompt;
-              }
+            if (!response.ok) {
+              throw new Error("OpenAI polish failed");
+            }
+            const data = (await response.json()) as {
+              choices?: Array<{ message?: { content?: string } }>;
+            };
+            const polished = data?.choices?.[0]?.message?.content?.trim();
+            if (polished?.length) {
+              systemPrompt = polished;
             }
           } catch (error) {
             console.warn("Generate fallback", error);
+            toast({
+              title: "OpenAI polish skipped",
+              description: "Couldn’t reach the API—using the deterministic prompt instead.",
+            });
           }
         }
 
@@ -208,7 +295,7 @@ const Page = () => {
         setIsGenerating(false);
       }
     },
-    [router, toast],
+    [router, sessionToken, toast],
   );
 
   const watchedConfig = form.watch();
@@ -229,8 +316,8 @@ const Page = () => {
   }, [enhanceEnabled, enhancePreviews, previewSignature]);
 
   const disableGenerate = !form.formState.isValid;
-  const hasClientToken = Boolean(sessionToken);
-  const canEnhance = hasOpenAIToggle || hasClientToken;
+  const hasClientToken = Boolean(sessionToken?.trim());
+  const canEnhance = hasClientToken;
 
   useEffect(() => {
     if (!canEnhance && enhanceEnabled) {

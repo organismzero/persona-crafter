@@ -35,7 +35,7 @@ const SettingsPanel = ({ token, onTokenChange }: SettingsPanelProps) => {
   const handleClear = () => {
     setDraft("");
     onTokenChange("");
-    toast({ title: "Token cleared", description: "Enhance Preview will use the server key if set." });
+    toast({ title: "Token cleared", description: "Enhance Preview will fall back to deterministic drafts." });
   };
 
   return (

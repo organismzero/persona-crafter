@@ -10,14 +10,14 @@ Persona Crafter is a Next.js (App Router) application for shaping a streamer cha
   - Personalization variables with safe defaults
 - **Live preview**
   - Deterministic preview builder on the client
-  - Optional OpenAI-enhanced rewrites via `/api/preview`
+  - Optional OpenAI-enhanced rewrites when a session token is provided
 - **Consistency checker**
   - Surface persona mismatches (rating vs flirtiness, deadpan vs exclamations, etc.)
   - One-click fixes that mutate form state safely
 - **Generation workflow**
   - Deterministic prompt builder (`lib/promptBuilder.ts`) for ~1.5k-word markdown
   - Cheatsheet builder (`lib/cheatsheetBuilder.ts`) for printable reference
-  - `/api/generate` optionally polishes via OpenAI when `OPENAI_API_KEY` is present
+  - Optional OpenAI polish using the session token (falls back to deterministic output)
 - **Export page**
   - Tabs for system prompt, JSON config, and cheatsheet
   - Copy/download actions for each artifact
@@ -41,7 +41,7 @@ Persona Crafter is a Next.js (App Router) application for shaping a streamer cha
 - **UI primitives**: shadcn/ui (Radix UI under the hood)
 - **State & forms**: `react-hook-form` + Zod validation
 - **Persistence**: Browser `localStorage` (no external database)
-- **Optional AI polish**: OpenAI REST API via server routes
+- **Optional AI polish**: Client-side OpenAI REST calls powered by a user-supplied session token
 
 ## Getting Started
 
@@ -95,13 +95,7 @@ Artifacts land in the `/samples` directory.
 
 ## Environment Variables
 
-- `OPENAI_API_KEY` – optional. When provided, `/api/generate` and `/api/preview` will send the persona configuration to OpenAI for enhanced outputs. Without the key, the app falls back to deterministic builders.
-
-Expose the key locally via `.env.local`. If you prefer to keep the server stateless, you can also add a token per-session in the in-app **Settings** panel; it’s saved only in the current browser tab.
-
-```
-OPENAI_API_KEY=sk-...
-```
+No environment variables are required for the static deployment. Enter an OpenAI API key in the in-app **Settings** panel to enable polish and enhanced previews—your key stays in `sessionStorage` for the current tab only.
 
 ## Project Structure
 
@@ -111,8 +105,8 @@ app/
   page.tsx             # Questionnaire wizard & live preview
   export/page.tsx      # Artifact export view (dynamic import client)
   about/page.tsx       # Project info & privacy note
-  api/generate/        # System prompt generation route
-  api/preview/         # Preview rewriting route
+  api/generate/        # Optional server route for OpenAI polish (unused on static deploy)
+  api/preview/         # Optional server route for OpenAI preview (unused on static deploy)
   icon.tsx             # Static favicon via ImageResponse
 
 components/
