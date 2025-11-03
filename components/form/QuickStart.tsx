@@ -1,7 +1,8 @@
 "use client";
 
 import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
-import { Sparkles, Volume2 } from "lucide-react";
+import { Check, CheckCircle2, Sparkles, Volume2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { defaultPersonaConfig, type PersonaConfig, type PersonaFormValues } from "@/schema/persona";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -108,12 +109,28 @@ const QuickStart = ({ form }: QuickStartProps) => (
                       <Button
                         key={option.value}
                         type="button"
-                        variant={isActive ? "default" : "outline"}
-                        className="h-auto justify-start gap-2 p-4 text-left"
+                        variant="outline"
+                        aria-pressed={isActive}
+                        className={cn(
+                          "group h-auto justify-start gap-3 rounded-2xl border bg-background p-4 text-left transition-colors",
+                          isActive
+                            ? "border-primary/80 bg-primary/10 text-primary shadow-sm"
+                            : "border-border/70 text-foreground hover:border-primary/40 hover:bg-primary/5",
+                        )}
                         onClick={() => field.onChange(option.value)}
                       >
-                        <span className="flex-1 font-semibold">{option.label}</span>
-                        <span className="text-xs text-muted-foreground">{option.vibe}</span>
+                        <div className="flex flex-1 flex-col">
+                          <span className="font-semibold leading-tight">{option.label}</span>
+                          <span
+                            className={cn(
+                              "pt-1 text-xs text-muted-foreground transition-colors",
+                              isActive && "text-primary/80",
+                            )}
+                          >
+                            {option.vibe}
+                          </span>
+                        </div>
+                        {isActive ? <CheckCircle2 className="h-5 w-5 text-primary" aria-hidden="true" /> : null}
                       </Button>
                     );
                   })}
@@ -335,11 +352,19 @@ const QuickStart = ({ form }: QuickStartProps) => (
                       <Button
                         key={option}
                         type="button"
-                        variant={isActive ? "default" : "outline"}
+                        variant="outline"
                         size="sm"
+                        aria-pressed={isActive}
+                        className={cn(
+                          "inline-flex items-center justify-start gap-2 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors",
+                          isActive
+                            ? "border-primary/80 bg-primary/10 text-primary shadow-sm"
+                            : "border-border/70 text-muted-foreground hover:border-primary/40 hover:bg-primary/5 hover:text-primary",
+                        )}
                         onClick={() => toggleArrayValue(field, option)}
                       >
-                        {option}
+                        {isActive ? <Check className="h-3.5 w-3.5" aria-hidden="true" /> : null}
+                        <span>{option}</span>
                       </Button>
                     );
                   })}
@@ -450,7 +475,12 @@ const QuickStart = ({ form }: QuickStartProps) => (
                     return (
                       <label
                         key={option}
-                        className="flex items-center gap-2 rounded-md border border-border bg-background p-2 text-sm"
+                        className={cn(
+                          "flex items-center gap-2 rounded-md border bg-background p-2 text-sm transition-colors",
+                          isChecked
+                            ? "border-primary/70 bg-primary/10 text-primary"
+                            : "border-border/70 hover:border-primary/40 hover:bg-primary/5",
+                        )}
                       >
                         <Checkbox
                           checked={isChecked}
@@ -479,7 +509,12 @@ const QuickStart = ({ form }: QuickStartProps) => (
                     return (
                       <label
                         key={option}
-                        className="flex items-center gap-2 rounded-md border border-border bg-background p-2 text-sm"
+                        className={cn(
+                          "flex items-center gap-2 rounded-md border bg-background p-2 text-sm transition-colors",
+                          isChecked
+                            ? "border-primary/70 bg-primary/10 text-primary"
+                            : "border-border/70 hover:border-primary/40 hover:bg-primary/5",
+                        )}
                       >
                         <Checkbox
                           checked={isChecked}
