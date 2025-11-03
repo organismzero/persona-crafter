@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import type { PersonaConfig, PersonaFormValues } from "@/schema/persona";
+import type { PersonaFormValues } from "@/schema/persona";
 
 type AdvancedSectionsProps = {
   form: UseFormReturn<PersonaFormValues>;
