@@ -123,15 +123,10 @@ const Page = () => {
   const enhancePreviews = useCallback(async () => {
     const snapshot = form.getValues();
     const parsed = PersonaConfig.safeParse(snapshot);
+    const persona = parsed.success ? parsed.data : defaultPersonaConfig;
     if (!parsed.success) {
-      toast({
-        title: "Complete the basics first",
-        description: "Fill out the required persona basics before enhancing the preview.",
-      });
-      setEnhanceEnabled(false);
-      return;
+      console.warn("Enhance preview config parse failed", parsed.error.flatten());
     }
-
     const token = sessionToken?.trim();
     if (!token) {
       toast({
@@ -144,7 +139,7 @@ const Page = () => {
 
     setIsEnhancing(true);
     try {
-      const baseline = buildPreviewReplies(parsed.data);
+      const baseline = buildPreviewReplies(persona);
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -165,7 +160,7 @@ const Page = () => {
               role: "user",
               content: [
                 "Persona config JSON:",
-                JSON.stringify(parsed.data, null, 2),
+                JSON.stringify(persona, null, 2),
                 "",
                 "Create three distinct replies for:",
                 "1. First-time chatter says hi.",
