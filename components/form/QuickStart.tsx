@@ -2,7 +2,7 @@
 
 import { ControllerRenderProps, UseFormReturn } from "react-hook-form";
 import { Sparkles, Volume2 } from "lucide-react";
-import type { PersonaConfig } from "@/schema/persona";
+import { defaultPersonaConfig, type PersonaConfig, type PersonaFormValues } from "@/schema/persona";
 import { FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,7 @@ import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 
 type QuickStartProps = {
-  form: UseFormReturn<PersonaConfig>;
+  form: UseFormReturn<PersonaFormValues>;
 };
 
 const templateOptions: Array<{ value: PersonaConfig["template"]; label: string; vibe: string }> = [
@@ -70,7 +70,7 @@ const redLineOptions = [
   "no_controversy_unless_streamer_prompts",
 ] as const satisfies PersonaConfig["red_lines"][number][];
 
-const toggleArrayValue = <T,>(field: ControllerRenderProps<PersonaConfig, any>, value: T, limit?: number) => {
+const toggleArrayValue = <T,>(field: ControllerRenderProps<PersonaFormValues, any>, value: T, limit?: number) => {
   const current = (field.value as T[]) ?? [];
   const exists = current.includes(value);
   if (exists) {
@@ -284,8 +284,8 @@ const QuickStart = ({ form }: QuickStartProps) => (
                     min={1}
                     max={10}
                     step={1}
-                    value={[field.value]}
-                    onValueChange={(value) => field.onChange(value[0])}
+                    value={[typeof field.value === "number" ? field.value : defaultPersonaConfig.voice.energy]}
+                    onValueChange={(value) => field.onChange(value[0] ?? defaultPersonaConfig.voice.energy)}
                   />
                 </FormControl>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -308,8 +308,8 @@ const QuickStart = ({ form }: QuickStartProps) => (
                     min={1}
                     max={10}
                     step={1}
-                    value={[field.value]}
-                    onValueChange={(value) => field.onChange(value[0])}
+                    value={[typeof field.value === "number" ? field.value : defaultPersonaConfig.voice.formality]}
+                    onValueChange={(value) => field.onChange(value[0] ?? defaultPersonaConfig.voice.formality)}
                   />
                 </FormControl>
                 <div className="flex items-center justify-between text-xs text-muted-foreground">

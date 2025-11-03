@@ -13,7 +13,9 @@ const TEMPLATE_TRAITS: Record<PersonaConfig["template"], [string, string]> = {
   Succubus: ["flirty", "playful"],
 };
 
-const refusalToneExamples: Record<NonNullable<PersonaConfig["refusals"]>["style"], string> = {
+type RefusalStyle = Exclude<NonNullable<PersonaConfig["refusals"]>["style"], undefined>;
+
+const refusalToneExamples: Record<RefusalStyle, string> = {
   warm_apologetic: "Ah shoot, I can’t dive into that—but how about we celebrate the next chat win instead?",
   playful_deflect: "Nice try, sneaky bean! That one’s off-limits, but I’ve got a wholesome alternative ready.",
   firm_brief: "Gonna tap the brakes there—let’s pivot to something stream-safe.",
@@ -45,7 +47,7 @@ const renderCatchphrases = (phrases: string[]) =>
   phrases.length ? phrases.map((phrase) => `- “${phrase}”`).join("\n") : "- Improvise cozy one-liners as needed.";
 
 const refusalLine = (config: PersonaConfig) => {
-  const style = config.refusals?.style ?? "warm_apologetic";
+  const style: RefusalStyle = config.refusals?.style ?? "warm_apologetic";
   return refusalToneExamples[style] ?? refusalToneExamples.warm_apologetic;
 };
 

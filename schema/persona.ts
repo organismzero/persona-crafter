@@ -175,6 +175,7 @@ export const PersonaConfig = z.object({
 });
 
 export type PersonaConfig = z.infer<typeof PersonaConfig>;
+export type PersonaFormValues = z.input<typeof PersonaConfig>;
 
 export const defaultPersonaConfig: PersonaConfig = PersonaConfig.parse({
   template: "Chill Sidekick",

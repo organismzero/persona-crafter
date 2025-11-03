@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
+import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Play } from "lucide-react";
 import QuickStart from "@/components/form/QuickStart";
@@ -20,7 +20,7 @@ import { clearPersonaConfig, loadPersonaConfig, saveArtifacts, savePersonaConfig
 import { buildSystemPrompt } from "@/lib/promptBuilder";
 import { buildCheatsheet } from "@/lib/cheatsheetBuilder";
 import { buildPreviewReplies } from "@/lib/previewBuilder";
-import { PersonaConfig, defaultPersonaConfig } from "@/schema/persona";
+import { PersonaConfig, type PersonaFormValues, defaultPersonaConfig } from "@/schema/persona";
 import { useToast } from "@/components/ui/use-toast";
 import { useSessionStorage } from "@/hooks/useSessionStorage";
 import { SESSION_TOKEN_KEY } from "@/lib/token";
@@ -47,7 +47,7 @@ const Page = () => {
     defaultValue: "",
   });
 
-  const form = useForm<PersonaConfig>({
+  const form = useForm<PersonaFormValues>({
     resolver: zodResolver(PersonaConfig),
     defaultValues: defaultPersonaConfig,
     mode: "onChange",
@@ -222,8 +222,8 @@ const Page = () => {
     }
   }, [form, sessionToken, toast]);
 
-  const onSubmit = useCallback(
-    async (values: PersonaConfig) => {
+  const onSubmit = useCallback<SubmitHandler<PersonaFormValues>>(
+    async (values) => {
       const parsed = PersonaConfig.parse(values);
       const includeFewShots = Boolean(parsed.calibration?.good_examples?.length);
 
