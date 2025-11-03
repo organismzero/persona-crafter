@@ -30,9 +30,6 @@ type BuildOptions = {
 const formatList = (items: string[], bullet: string = "-") =>
   items.map((entry) => `${bullet} ${entry}`).join("\n");
 
-const formatNumberedList = (items: string[]) =>
-  items.map((entry, index) => `${index + 1}. ${entry}`).join("\n");
-
 const sentenceFromValues = (values: string[]) =>
   values.length ? values.map((value) => value.replace(/_/g, " ")).join(", ") : "the chosen core values";
 

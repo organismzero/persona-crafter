@@ -8,12 +8,6 @@ const energyTone = (energy: number) => {
   return "medium";
 };
 
-const formalityTone = (formality: number) => {
-  if (formality >= 7) return "formal";
-  if (formality <= 3) return "casual";
-  return "balanced";
-};
-
 const emojiPack = (density: PersonaConfig["voice"]["emoji_density"], intensity: PersonaConfig["emoji_intensity"]) => {
   const pool = ["✨", "😊", "🔥", "💬", "🎉", "🌀", "🤝", "🛡️"];
   const heavyPool = ["🎉", "🔥", "💥", "😎", "🤖", "💫"];

@@ -21,7 +21,7 @@ const ConsistencyHints = ({ issues, onApply }: ConsistencyHintsProps) => {
           </Badge>
         </CardHeader>
         <CardContent className="text-sm text-muted-foreground">
-          Everything lines up. Keep experimenting—I'll flag anything quirky.
+          Everything lines up. Keep experimenting—I&apos;ll flag anything quirky.
         </CardContent>
       </Card>
     );

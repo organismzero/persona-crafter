@@ -12,12 +12,24 @@ export const useSessionStorage = <T,>({ key, defaultValue }: Options<T>): [T, (v
     if (typeof window === "undefined") return;
     const item = window.sessionStorage.getItem(key);
     if (!item) return;
+    let parsed: T = defaultValue;
     try {
-      setStored(JSON.parse(item));
+      parsed = JSON.parse(item) as T;
     } catch (error) {
       console.warn("Failed to parse session storage value", error);
-      setStored(defaultValue);
     }
+
+    let cancelled = false;
+    const frame = window.requestAnimationFrame(() => {
+      if (!cancelled) {
+        setStored(parsed);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      window.cancelAnimationFrame(frame);
+    };
   }, [defaultValue, key]);
 
   const setValue = (value: T) => {

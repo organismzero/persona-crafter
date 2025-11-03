@@ -128,7 +128,7 @@ const AdvancedSections = ({ form }: AdvancedSectionsProps) => (
                     onChange={(event) => field.onChange(event.target.value.split("\n").map((v) => v.trim()).filter(Boolean).slice(0, 3))}
                   />
                 </FormControl>
-                <FormDescription>Pick cozy inspiration; we'll nod to them lightly.</FormDescription>
+                <FormDescription>Pick cozy inspiration; we&apos;ll nod to them lightly.</FormDescription>
                 <FormMessage />
               </FormItem>
             )}

@@ -9,10 +9,18 @@ import { loadArtifacts, type GeneratedArtifacts } from "@/lib/storage";
 import { PersonaConfig, defaultPersonaConfig } from "@/schema/persona";
 
 const ExportPageClient = () => {
-  const [artifacts, setArtifacts] = useState<GeneratedArtifacts | null>(null);
+  const [artifacts, setArtifacts] = useState<GeneratedArtifacts | null>(() => loadArtifacts());
 
   useEffect(() => {
-    setArtifacts(loadArtifacts());
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      setArtifacts(loadArtifacts());
+    });
+
+    return () => window.cancelAnimationFrame(frame);
   }, []);
 
   if (!artifacts) {
