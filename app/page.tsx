@@ -144,6 +144,7 @@ const Page = () => {
 
     setIsEnhancing(true);
     try {
+      const baseline = buildPreviewReplies(parsed.data);
       const response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -180,12 +181,20 @@ const Page = () => {
         }),
       });
       if (!response.ok) {
-        throw new Error("Unable to enhance");
+        if (response.status === 401) {
+          toast({
+            title: "Token rejected",
+            description: "OpenAI returned 401 — double-check your API token and try again.",
+          });
+          setEnhancedDrafts(baseline);
+          setEnhanceEnabled(false);
+          return;
+        }
+        throw new Error(`Enhance request failed with status ${response.status}`);
       }
       const data = (await response.json()) as {
         choices?: Array<{ message?: { content?: string } }>;
       };
-      const baseline = buildPreviewReplies(parsed.data);
       const content = data?.choices?.[0]?.message?.content?.trim();
       if (!content) {
         setEnhancedDrafts(baseline);

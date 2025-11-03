@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/use-toast";
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? "";
+
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
@@ -11,7 +13,12 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "Persona Crafter",
   description: "Build a cozy chatbot persona with live previews and exportable assets.",
-  manifest: "/manifest.json",
+  manifest: `${basePath}/manifest.json`,
+  icons: {
+    icon: `${basePath}/icon.svg`,
+    shortcut: `${basePath}/icon.svg`,
+    apple: `${basePath}/icon.svg`,
+  },
 };
 
 type RootLayoutProps = {
