@@ -125,8 +125,8 @@ const Page = () => {
     const parsed = PersonaConfig.safeParse(snapshot);
     if (!parsed.success) {
       toast({
-        title: "Finish Quick Start first",
-        description: "We need a valid persona before asking the model to riff.",
+        title: "Complete the basics first",
+        description: "Fill out the required persona basics before enhancing the preview.",
       });
       setEnhanceEnabled(false);
       return;
@@ -383,10 +383,15 @@ const Page = () => {
         <Form {...form}>
           <form className="space-y-10" onSubmit={form.handleSubmit(onSubmit)}>
             <section aria-labelledby="quick-start-heading" className="space-y-10">
-              <div>
-                <h2 id="quick-start-heading" className="sr-only">
-                  Quick Start
-                </h2>
+              <div className="space-y-4">
+                <div className="flex flex-col gap-1">
+                  <h2 id="quick-start-heading" className="text-xl font-semibold text-foreground">
+                    Persona Basics (required)
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    Work through these core choices first—once they’re valid you can enhance previews or generate the bundle.
+                  </p>
+                </div>
                 <QuickStart form={form} />
               </div>
               <AdvancedSections form={form} />
